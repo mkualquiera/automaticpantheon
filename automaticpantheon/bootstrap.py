@@ -12,7 +12,7 @@ _LOG = logging.getLogger(__name__)
 
 
 async def ensure_bootstrapped(client: discord.Client, db_root: RootConvenience) -> None:
-    """Ensure that the guild
+    """Ensure that the guild exists and is bootstrapped.
 
     Parameters
     ----------
