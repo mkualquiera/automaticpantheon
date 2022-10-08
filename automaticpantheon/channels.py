@@ -1,6 +1,7 @@
 from enum import Enum
-from persistent import Persistent
+
 from discord import Guild
+from persistent import Persistent
 
 
 class CoreChannelRoles(Enum):
