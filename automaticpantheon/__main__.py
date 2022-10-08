@@ -28,6 +28,8 @@ _LOG = logging.getLogger(__name__)
 
 
 async def ensure_guild() -> None:
+    """Ensure that the main guild exists."""
+
     num_guilds = len(CLIENT.guilds)
     if num_guilds == 0:
         _LOG.warning("No guilds found. Creating one...")
@@ -38,6 +40,12 @@ async def ensure_guild() -> None:
 
 
 async def ensure_invite(guild: discord.Guild) -> None:
+    """Ensure that the main guild has an invite.
+
+    Parameters
+    ----------
+    guild: discord.Guild
+        The guild to ensure an invite for."""
 
     invites = await guild.invites()
 
@@ -57,6 +65,17 @@ async def ensure_invite(guild: discord.Guild) -> None:
 async def ensure_core_channel(
     guild: discord.Guild, role: CoreChannelRoles, role_manager: CoreChannelRoleManager
 ) -> None:
+    """Ensure that a core channel exists.
+
+    Parameters
+    ----------
+    guild: discord.Guild
+        The guild to ensure the core channel exists in.
+    role: CoreChannelRoles
+        The role of the core channel.
+    role_manager: CoreChannelRoleManager
+        The role manager for the guild.
+    """
 
     must_create = False
 
@@ -94,6 +113,13 @@ async def ensure_core_channel(
 
 
 async def ensure_core_channels(guild: discord.Guild) -> None:
+    """Ensure that all core channels exist.
+
+    Parameters
+    ----------
+    guild: discord.Guild
+        The guild to ensure the core channels exist in.
+    """
 
     try:
         role_managers = DB_ROOT.channel_role_managers
@@ -104,7 +130,7 @@ async def ensure_core_channels(guild: discord.Guild) -> None:
     try:
         role_manager = role_managers[guild.id]
     except KeyError:
-        role_managers[guild.id] = CoreChannelRoleManager(guild)
+        role_managers[guild.id] = CoreChannelRoleManager()
         role_manager = role_managers[guild.id]
 
     for role in CoreChannelRoles:
@@ -113,6 +139,8 @@ async def ensure_core_channels(guild: discord.Guild) -> None:
 
 @CLIENT.event
 async def on_ready() -> None:
+    """Event handler for when the client is ready."""
+
     _LOG.info(f"Logged in as {CLIENT.user}")
 
     await ensure_guild()
