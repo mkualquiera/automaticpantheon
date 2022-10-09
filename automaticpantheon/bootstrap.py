@@ -110,7 +110,7 @@ async def ensure_core_channel(
         channel = await guild.create_text_channel(role.name)
         _LOG.info("Created channel %s", channel)
         role_manager.set_core_channel(role, channel.id)
-        translation.commit()
+        transaction.commit()
 
 
 async def ensure_core_channels(guild: discord.Guild, db_root: RootConvenience) -> None:
