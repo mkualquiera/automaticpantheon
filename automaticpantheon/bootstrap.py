@@ -7,6 +7,7 @@ import transaction
 from ZODB.Connection import RootConvenience
 
 from .channels import CoreChannelRoleManager, CoreChannelRoles
+from .gods import Pantheon
 
 _LOG = logging.getLogger(__name__)
 
@@ -25,6 +26,7 @@ async def ensure_bootstrapped(client: discord.Client, db_root: RootConvenience) 
     await ensure_guild(client)
     for guild in client.guilds:
         await ensure_core_channels(guild, db_root)
+        await ensure_core_pantheon(guild, db_root)
         await ensure_invite(guild)
 
 
@@ -138,3 +140,27 @@ async def ensure_core_channels(guild: discord.Guild, db_root: RootConvenience) -
 
     for role in CoreChannelRoles:
         await ensure_core_channel(guild, role, role_manager)
+
+async def ensure_core_pantheon(guild: discord.Guild, db_root: RootConvenience) -> None:
+    """Ensure pantheon exists.
+
+    Parameters
+    ----------
+    guild: discord.Guild
+        The guild that owns the pantheon.
+    db_root: RootConvenience
+        The root of the database.
+    """
+
+    try:
+        pantheon_manager = db_root.pantheon_manager
+    except AttributeError:
+        db_root.pantheon_manager = {}
+        pantheon_manager = db_root.pantheon_manager
+    try:
+        pantheon_manager[guild.id]
+        _LOG.info("Found pantheon in %s db",guild.name)
+    except KeyError:
+        _LOG.warning("No pantheon found. Creating one...")
+        pantheon_manager[guild.id] = Pantheon()
+        transaction.commit()
